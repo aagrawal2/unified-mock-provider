@@ -1,0 +1,19 @@
+{
+    "names": [
+        {"text":"Bank of America","value":"Bank of America","image":{"avatar":true,"src":"/Users/aagrawal2/Intuit/workspace/unified-mock-provider/client/src/images/bofa.jpg"}},        
+        {"text":"Citi Bank","value":"Citi Bank"},
+        {"text":"Amex","value":"Amex"},
+        {"text":"First Tech Credit Union","value":"First Tech Credit Union"},
+        {"text":"Wells Fargo","value":"Wells Fargo"},
+        {"text":"Comcast","value":"Comcast"}
+    ],
+    "Bank of America": {
+        "Account": ["checking","saving","creditcard"],
+        "Transaction": [],
+        "Bill": []
+    },
+    "Comcast": {
+        "Account": [],
+        "Bill": []
+    }
+}
