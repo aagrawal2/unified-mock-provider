@@ -1,19 +1,66 @@
 {
     "names": [
-        {"text":"Bank of America","value":"Bank of America","image":{"avatar":true,"src":"/Users/aagrawal2/Intuit/workspace/unified-mock-provider/client/src/images/bofa.jpg"}},        
-        {"text":"Citi Bank","value":"Citi Bank"},
-        {"text":"Amex","value":"Amex"},
-        {"text":"First Tech Credit Union","value":"First Tech Credit Union"},
-        {"text":"Wells Fargo","value":"Wells Fargo"},
-        {"text":"Comcast","value":"Comcast"}
+        {"text":"Bank of America","value":"bofa","image":{"avatar":true,"src":"/Users/aagrawal2/Intuit/workspace/unified-mock-provider/client/src/images/bofa.jpg"}},        
+        {"text":"Citi Bank","value":"citi"},
+        {"text":"Amex","value":"amex"},
+        {"text":"First Tech Credit Union","value":"fcu"},
+        {"text":"Wells Fargo","value":"wf"},
+        {"text":"Comcast","value":"comcast"}
     ],
-    "Bank of America": {
-        "Account": ["checking","saving","creditcard"],
-        "Transaction": [],
-        "Bill": []
-    },
-    "Comcast": {
-        "Account": [],
-        "Bill": []
-    }
+    "bofa": [
+        {
+            "Header": "Account Name",
+            "accessor": "accountName"
+        },
+        {
+            "Header": "Number",
+            "accessor": "accountNumber"
+        },
+        {
+            "Header": "Type",
+            "accessor": "accountType"
+        },
+        {
+            "Header": "Balance",
+            "accessor": "accountBalance"
+        },
+        {
+            "Header": "Interest YTD",
+            "accessor": "interestYtd"
+        },
+        {
+            "Header": "Available Credit",
+            "accessor": "availableCredit"
+        },
+        {
+            "Header": "Interest Rate",
+            "accessor": "interestRate"
+        }
+    ],
+    "citi": [
+        {
+            "Header": "Description",
+            "accessor": "accountDesc"
+        },
+        {
+            "Header": "Ac Num",
+            "accessor": "accountNumber"
+        },
+        {
+            "Header": "Ac Type",
+            "accessor": "accountType"
+        },
+        {
+            "Header": "Curr Balance",
+            "accessor": "currBalance"
+        },        
+        {
+            "Header": "Credit Line",
+            "accessor": "creditLine"
+        },
+        {
+            "Header": "Interest Rate",
+            "accessor": "interestRate"
+        }
+    ]
 }

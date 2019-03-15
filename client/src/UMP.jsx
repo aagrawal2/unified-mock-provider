@@ -25,8 +25,6 @@ export default class UMP extends Component {
         }                
     }
 
-    username;
-
     showSigninBox = () => {
         this.setState({isSigninOpen: true, isSignupOpen: false})
     }
@@ -45,7 +43,13 @@ export default class UMP extends Component {
         this.setState({isSignUp: flag});
     }
 
-    setRenderAccount = (flag) => this.setState({renderAccount: flag})                        
+    setRenderAccount = (flag,providerName,accountData) => {
+        this.providerName = providerName;
+        this.accountData = accountData;
+        this.setState({renderAccount: flag})                        
+    }
+
+    logOut = () => this.setState({isSignIn:false,isSignUp:false})
 
     signUpSignInBox = () => {
         return (
@@ -74,6 +78,9 @@ export default class UMP extends Component {
         return (  
             <BrowserRouter> 
                 <Fragment>  
+                    {
+                        (!isSignIn && !isSignUp) && <Redirect to="/login" />
+                    }
                     { 
                         ((isSignIn || isSignUp) && !renderAccount) && <Redirect to="/provider"/>                        
                     } 
@@ -83,8 +90,10 @@ export default class UMP extends Component {
                     <Switch>                        
                         <Route exact path="/" render={()=><Redirect to="/login" />} />
                         <Route path="/login" render={this.signUpSignInBox} />            
-                        {(isSignIn || isSignUp) && <Route exact path="/provider" render={props => <Provider {...props} username={this.username} setRenderAccount={this.setRenderAccount} />} />}                        
-                        {<Route path="/provider/account" render={()=><Account />} />}
+                        {(isSignIn || isSignUp) && <Route exact path="/provider" render={props => <Provider {...props} username={this.username} 
+                            setRenderAccount={this.setRenderAccount} navigateBack={this.logOut}/>} />}                        
+                        {(isSignIn || isSignUp) && <Route path="/provider/account" render={props => <Account {...props} providerName={this.providerName} accountData={this.accountData}
+                            navigateBack={()=>this.setRenderAccount(false)} />} />}
                         <Route render={()=><center><h5>You are not signed in or Page Not Found</h5></center>}/>
                     </Switch>                    
                 </Fragment>                          

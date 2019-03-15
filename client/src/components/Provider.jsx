@@ -2,7 +2,7 @@ import React from 'react';
 /* import DropdownButton from 'react-bootstrap/DropdownButton';
 import Button from 'react-bootstrap/Button';
 import Dropdown from 'react-bootstrap/Dropdown'; */
-import {Dropdown} from 'semantic-ui-react';
+import {Dropdown, Button} from 'semantic-ui-react';
 import BofaLogo from '../images/bofa.jpg';
 import CitiLogo from '../images/citi.jpg';
 import AmexLogo from '../images/amex.jpg';
@@ -14,6 +14,7 @@ import WellsFargoLogo from '../images/wellsfargo.jpg';
 import '../scss/Provider.scss';
 
 import provider from '../conf/provider.json';
+import Axios from 'axios';
 
 //TODO: convert this to functional component
 export default class Provider extends React.Component {
@@ -27,7 +28,7 @@ export default class Provider extends React.Component {
 
     loadProviderLogos = () => {
         provider.names.forEach(provider=>{
-            if (provider.value.toLowerCase().includes('bank of america')) {
+            if (provider.value.toLowerCase().includes('bofa')) {
                 provider.image = {avatar:true,src:BofaLogo};
             } 
             else if (provider.value.toLowerCase().includes('citi')) {
@@ -39,10 +40,10 @@ export default class Provider extends React.Component {
             else if (provider.value.toLowerCase().includes('comcast')) {
                 provider.image = {avatar:true,src:ComcastLogo};
             }
-            else if (provider.value.toLowerCase().includes('first tech')) {
+            else if (provider.value.toLowerCase().includes('fcu')) {
                 provider.image = {avatar:true,src:FirstTechLogo};
             }
-            else if (provider.value.toLowerCase().includes('wells fargo')) {
+            else if (provider.value.toLowerCase().includes('wf')) {
                 provider.image = {avatar:true,src:WellsFargoLogo};
             }
         })
@@ -57,20 +58,39 @@ export default class Provider extends React.Component {
         return items;
     } */
 
+    navigateBack = () => this.props.navigateBack()
+
     onChangeProvider = (event, data) => {                
         const username = this.props.username;
-        console.log(`username:${username} provider=${data.value}`);
+        const providerName = data.value;
         //TODO: call backend api to find accounts for this username & provider
-        //render Account component
-        this.props.setRenderAccount(true);
+        const url = 'https://localhost/ump/user/'+username+'/provider/'+providerName+'/accounts';
+        const config = {
+            timeout: 10000
+        };
+        Axios.get(url,config).then(response=>{
+            if(response.status === 200 && !response.data.error) {
+                const accountData = response.data;
+                //render Account component
+                this.props.setRenderAccount(true,providerName,accountData);        
+            }
+        }).catch(error=>{
+            console.log(`error=${error}`);
+            alert('Something unexpected between client server communication, check error logs for more details');
+        })
+
     }
     
     render() {             
         return (
-            <div className="provider">
-                <Dropdown placeholder='Choose your provider' fluid search selection options={provider.names} 
-                    onChange={this.onChangeProvider}/>
-            </div>                
+            <div>
+                <Button color="black" style={{float:"right"}} icon="arrow alternate circle left" onClick={this.navigateBack} />
+                <div className="provider">
+                    <Dropdown placeholder='Choose your provider' fluid search selection options={provider.names} 
+                        onChange={this.onChangeProvider}/>
+                </div>
+            </div>
+                            
         )
     }
 }

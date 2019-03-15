@@ -20,7 +20,7 @@
     "minimist": "^1.2.0",
     "mongodb": "^3.1.13",
     "uniqid": "^5.0.3"
-  },
+  },  
   "devDependencies": {
     "babel-register": "^6.26.0",
     "nodemon": "^1.18.10"
