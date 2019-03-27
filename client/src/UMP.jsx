@@ -8,6 +8,7 @@ import Provider from './components/Provider';
 
 import 'semantic-ui-css/semantic.min.css';
 import './scss/_loginSty.scss';
+import Accounts from './components/Accounts';
 import Account from './components/Account';
 //import './scss/bootstrap.min.scss';
 
@@ -54,7 +55,7 @@ export default class UMP extends Component {
     signUpSignInBox = () => {
         return (
             <div className="root-container">
-                    <div className="header title-header">Welcome to Unified Mock Provider</div>
+                    <div className="header title-header">Welcome to Unified Provider</div>
                     <div className="box-controller">
                         <div className={"controller" + (this.state.isSigninOpen ? " selected-controller" : "")}
                             onClick={this.showSigninBox.bind(this)}>
@@ -85,15 +86,17 @@ export default class UMP extends Component {
                         ((isSignIn || isSignUp) && !renderAccount) && <Redirect to="/provider"/>                        
                     } 
                     {
-                        ((isSignIn || isSignUp) && renderAccount) && <Redirect to="/provider/account"/>                        
+                        ((isSignIn || isSignUp) && renderAccount) && <Redirect to="/provider/accounts"/>                        
                     }
                     <Switch>                        
                         <Route exact path="/" render={()=><Redirect to="/login" />} />
-                        <Route path="/login" render={this.signUpSignInBox} />            
+                        <Route exact path="/login" render={this.signUpSignInBox} />            
                         {(isSignIn || isSignUp) && <Route exact path="/provider" render={props => <Provider {...props} username={this.username} 
                             setRenderAccount={this.setRenderAccount} navigateBack={this.logOut}/>} />}                        
-                        {(isSignIn || isSignUp) && <Route path="/provider/account" render={props => <Account {...props} providerName={this.providerName} accountData={this.accountData}
+                        {(isSignIn || isSignUp) && <Route exact path="/provider/accounts" render={props => <Accounts {...props} providerName={this.providerName} accountData={this.accountData}
                             navigateBack={()=>this.setRenderAccount(false)} />} />}
+                        <Route exact path="/provider/account/:accountId" render={ props => <Account {...props} providerName={this.providerName} username={this.username} 
+                            navigateBack={()=>this.setRenderAccount(true)} />} />
                         <Route render={()=><center><h5>You are not signed in or Page Not Found</h5></center>}/>
                     </Switch>                    
                 </Fragment>                          

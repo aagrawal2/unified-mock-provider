@@ -42,6 +42,9 @@ app.use(allowCrossDomain);
 //configure middleware routes
 app.use('/ump',userRoutes,accountRoutes);
 
+//app settings - to indent prettified JSON - used by JSON.stringify()
+app.set('json spaces', 4);
+
 //check for null, undefined, empty, space String
 const stringNullEmptySpace = (str) => (!str || str.length === 0 || /^\s*$/.test(str));
 

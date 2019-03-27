@@ -30,9 +30,23 @@ router.get('/user/:username/provider/:providerName/accounts',(req,res,next)=> {
         const collection = req.params.providerName;
 
         //.toArray() is good enough for 'n' number of docs and then there might be chance of outOfMemory/performance leak. During performance test we should find value of this 'n'.
-        //TODO: in future we might want to use Cursor object to iterate over docs in chunks and return results. 
+        //TODO: in future we might want to use Cursor object to iterate over docs in chunks and return results.         
         const accounts = await db.collection(collection).find({username: username}).toArray();
         res.status(200).send(accounts);
+
+    }).catch(next);
+})
+
+//get account details for a particular accountId for a given user in a given provider
+router.get('/user/:username/provider/:providerName/account/:accountId',(req,res,next)=> {
+    Promise.resolve().then(async ()=> {
+        const db = app.locals.db;
+        const username = req.params.username;
+        const collection = req.params.providerName;
+        const accountId = req.params.accountId;
+
+        const accountDetails = await db.collection(collection).find({username:username,_id:ObjectId(accountId)}).toArray();       
+        res.status(200).send(accountDetails);
 
     }).catch(next);
 })

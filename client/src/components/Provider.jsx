@@ -49,21 +49,12 @@ export default class Provider extends React.Component {
         })
     };
     
-    /* loadProviderNames = () => {
-        const items = [];
-        const providerNames = provider.names;
-        let key = 0;
-        providerNames.forEach(provider=>items.push(<Dropdown.Item key={key++} eventKey={provider}>{provider}</Dropdown.Item>))
-        
-        return items;
-    } */
-
     navigateBack = () => this.props.navigateBack()
 
     onChangeProvider = (event, data) => {                
         const username = this.props.username;
         const providerName = data.value;
-        //TODO: call backend api to find accounts for this username & provider
+        //call backend api to find accounts for this username & provider
         const url = 'https://localhost/ump/user/'+username+'/provider/'+providerName+'/accounts';
         const config = {
             timeout: 10000
@@ -75,8 +66,8 @@ export default class Provider extends React.Component {
                 this.props.setRenderAccount(true,providerName,accountData);        
             }
         }).catch(error=>{
-            console.log(`error=${error}`);
-            alert('Something unexpected between client server communication, check error logs for more details');
+            console.log(`error=${error.stack}`);
+            alert('Something unexpected between client server communication or rendering Accounts component, check error logs for more details');
         })
 
     }

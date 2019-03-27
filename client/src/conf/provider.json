@@ -1,6 +1,6 @@
 {
     "names": [
-        {"text":"Bank of America","value":"bofa","image":{"avatar":true,"src":"/Users/aagrawal2/Intuit/workspace/unified-mock-provider/client/src/images/bofa.jpg"}},        
+        {"text":"Bank of America","value":"bofa"},        
         {"text":"Citi Bank","value":"citi"},
         {"text":"Amex","value":"amex"},
         {"text":"First Tech Credit Union","value":"fcu"},
@@ -10,7 +10,11 @@
     "bofa": [
         {
             "Header": "Account Name",
-            "accessor": "accountName"
+            "accessor": "accountName"            
+        },
+        {
+            "Header": "Id",
+            "accessor": "_id"
         },
         {
             "Header": "Number",
@@ -45,6 +49,10 @@
         {
             "Header": "Ac Num",
             "accessor": "accountNumber"
+        },
+        {
+            "Header": "Id",
+            "accessor": "_id"
         },
         {
             "Header": "Ac Type",
