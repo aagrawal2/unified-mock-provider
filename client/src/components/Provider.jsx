@@ -14,7 +14,6 @@ import WellsFargoLogo from '../images/wellsfargo.jpg';
 import '../scss/Provider.scss';
 
 import provider from '../conf/provider.json';
-import Axios from 'axios';
 
 //TODO: convert this to functional component
 export default class Provider extends React.Component {
@@ -51,25 +50,10 @@ export default class Provider extends React.Component {
     
     navigateBack = () => this.props.navigateBack()
 
-    onChangeProvider = (event, data) => {                
-        const username = this.props.username;
+    onChangeProvider = (event, data) => {                        
         const providerName = data.value;
-        //call backend api to find accounts for this username & provider
-        const url = 'https://localhost/ump/user/'+username+'/provider/'+providerName+'/accounts';
-        const config = {
-            timeout: 10000
-        };
-        Axios.get(url,config).then(response=>{
-            if(response.status === 200 && !response.data.error) {
-                const accountData = response.data;
-                //render Account component
-                this.props.setRenderAccount(true,providerName,accountData);        
-            }
-        }).catch(error=>{
-            console.log(`error=${error.stack}`);
-            alert('Something unexpected between client server communication or rendering Accounts component, check error logs for more details');
-        })
-
+        //render Accounts component
+        this.props.setRenderAccount(true,providerName);        
     }
     
     render() {             

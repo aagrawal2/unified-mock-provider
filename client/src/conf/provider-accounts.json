@@ -1,7 +1,16 @@
 {    
-    "__comment_file": "If the fields in this file not are not found in real Account object then it won't be rendered",    
-    "__comment": "all possible field names for accountType value irrespective of provider",
+    "__comment0": "If the fields in this file not are not found in real Account object then it won't be rendered",    
+    "__comment1": "all possible field names for accountType value irrespective of provider and this is case-insensitive",
     "accountTypeFields": ["accountType","account_type"],
+    "__comment2": "sub-fields represent date time values",
+    "dateFields": ["date","time","AsOf"],
+    "__comment3": "sub-fields having numeric as default values while creating account",
+    "numericFields": ["accountid","number","balance","credit","cash","creditline","limit","amount","interest","principal"],
+    "__comment4": "sub-fields having alphabetic as default values while creating account",
+    "alphabeticFields": ["name","nick","display"],
+    "__comment5": "sub-fields represent currency code",
+    "currencyFields": ["code","currency"],    
+
     "bofa": {
         "form_group_size": 3,
         "checking": [            

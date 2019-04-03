@@ -44,9 +44,8 @@ export default class UMP extends Component {
         this.setState({isSignUp: flag});
     }
 
-    setRenderAccount = (flag,providerName,accountData) => {
-        this.providerName = providerName;
-        this.accountData = accountData;
+    setRenderAccount = (flag,providerName) => {
+        this.providerName = providerName;        
         this.setState({renderAccount: flag})                        
     }
 
@@ -93,7 +92,7 @@ export default class UMP extends Component {
                         <Route exact path="/login" render={this.signUpSignInBox} />            
                         {(isSignIn || isSignUp) && <Route exact path="/provider" render={props => <Provider {...props} username={this.username} 
                             setRenderAccount={this.setRenderAccount} navigateBack={this.logOut}/>} />}                        
-                        {(isSignIn || isSignUp) && <Route exact path="/provider/accounts" render={props => <Accounts {...props} providerName={this.providerName} accountData={this.accountData}
+                        {(isSignIn || isSignUp) && <Route exact path="/provider/accounts" render={props => <Accounts {...props} providerName={this.providerName} username={this.username}
                             navigateBack={()=>this.setRenderAccount(false)} />} />}
                         <Route exact path="/provider/account/:accountId" render={ props => <Account {...props} providerName={this.providerName} username={this.username} 
                             navigateBack={()=>this.setRenderAccount(true)} />} />

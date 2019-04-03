@@ -15,7 +15,7 @@ router.post('/user/:username/provider/:providerName/accounts', (req,res,next) =>
         for (userAccount of userAccounts) {
             userAccount.username = username;
         }
-
+        
         //insert many accounts in one write operation
         const result = await db.collection(collection).insertMany(userAccounts);
         res.status(201).send(result.ops);        
@@ -91,7 +91,28 @@ router.put('/user/:username/provider/:providerName/account/:docId/transaction/:t
     }).catch(next);
 })
 
-//TODO: delete an account from db
+//delete an account from db per user per provider
+router.delete('/user/:username/provider/:providerName/account/:docId',(req,res,next) => {
+    Promise.resolve().then(async ()=> {
+        const db = app.locals.db;
+        const collection = req.params.providerName;
+        const docId = req.params.docId;
+
+        const result = await db.collection(collection).deleteOne({_id:ObjectId(docId)});
+        if (result) {
+            if (result.deletedCount === 1) {
+                res.status(200).send({message: 'account deleted successfully'});
+            }
+            else {
+                res.status(200).send({error: 'account doesn`t exist'});
+            }
+        }
+        else {
+            res.sendStatus(500);
+        }
+    }).catch(next);
+})
+
 //TODO: update an account 
 //TODO: add a bill associated with an account
 
