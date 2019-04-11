@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Header, Button } from 'semantic-ui-react';
+import { Form, Header, Button, Transition, Message } from 'semantic-ui-react';
 import Axios from 'axios';
 import AccountDetails from '../conf/provider-accounts.json';
 import BofaLogo from '../images/bofa.jpg';
@@ -8,18 +8,25 @@ import AmexLogo from '../images/amex.jpg';
 import ComcastLogo from '../images/comcast.jpg';
 import FirstTechLogo from '../images/firsttech.jpg';
 import WellsFargoLogo from '../images/wellsfargo.jpg';
+import '../scss/Account.scss';
 
 export default class Account extends React.Component {    
     
     constructor(props) {
         super(props);
         this.state = {
-            formData: []
+            formData: [],
+            visible: false,
+            success: false,
+            error: false,
+            message: '',
+            icon: ''            
         };
         this.accountId = this.props.match.params.accountId;
         this.username = this.props.username;
-        this.providerName = this.props.providerName;    
-        this.navigateBack = this.navigateBack.bind(this);
+        this.providerName = this.props.providerName;     
+        this.accountDetailsConfig = undefined;       
+        this.navigateBack = this.navigateBack.bind(this);        
     };
 
     componentDidMount = () => {        
@@ -90,19 +97,19 @@ export default class Account extends React.Component {
 
         //Map accountData field names with Labels from config file
         this.accountType = accountTypeValue.toLowerCase();
-        const accountDetailsConfig = AccountDetails[this.providerName.toLowerCase()][this.accountType];        
-        accountDetailsConfig.forEach(element=>{
+        this.accountDetailsConfig = AccountDetails[this.providerName.toLowerCase()][this.accountType];        
+        this.accountDetailsConfig.forEach(element=>{
             const label = element.label;
-            let value;
+            let placeholder;
             if(element.field.includes('.')) {
                 const keys = element.field.split('.');
                 //skip processing of field in case not found in account object
                 if(!accountData.hasOwnProperty(keys[0])) {
                     return;
                 }
-                value = accountData[keys[0]];
+                placeholder = accountData[keys[0]];
                 for(let i=1; i<keys.length; i++) {
-                    value = value[keys[i]];
+                    placeholder = placeholder[keys[i]];
                 }
             }
             else {
@@ -110,22 +117,24 @@ export default class Account extends React.Component {
                 if(!accountData.hasOwnProperty(element.field)) {
                     return;
                 }
-                value = accountData[element.field];
+                placeholder = accountData[element.field];
             }
-            formData.push({label:label,value:value});                        
+            formData.push({label:label,placeholder:placeholder,value:''});                                   
         });        
         this.setState({formData});        
     }
 
     groupFormData = (formData,index,groupSize) => {
         const groupInputs = [];
-        
+        let form_group_input_key = 0;        
         for(let i=0; i<groupSize; i++) {
-            let key = Math.random().toString(36).substr(2);            
-            let label = formData[index+i].label;            
-            let placeholder = formData[index+i].value;
-            groupInputs.push(<Form.Input key={key} label={label} placeholder={placeholder}/>);
-        }        
+            //const key = Math.random().toString(36).substr(2);            
+            const label = formData[index+i].label;            
+            const placeholder = formData[index+i].placeholder;
+            const value = formData[index+i].value;            
+            groupInputs.push(<Form.Input key={form_group_input_key++} label={label} name={label} placeholder={placeholder} value={value} onChange={this.changeHandlerFormValue}/>);            
+        }  
+        
         return groupInputs;
     }
 
@@ -138,31 +147,115 @@ export default class Account extends React.Component {
         const FORM_GROUP_SIZE = AccountDetails[this.providerName].form_group_size;
         let index = 0;        
         let lengthFormData = formData.length;        
-        while(lengthFormData - FORM_GROUP_SIZE > 0) {
+        let form_group_key = 0;        
+        while(lengthFormData - FORM_GROUP_SIZE > 0) {             
             lengthFormData = lengthFormData - FORM_GROUP_SIZE;
-            let key = Math.random().toString(36).substr(2);                        
-            let formGroup = <Form.Group key={key} widths="equal">{this.groupFormData(formData,index,FORM_GROUP_SIZE)}</Form.Group>;
+            //let key = Math.random().toString(36).substr(2);                        
+            let formGroup = <Form.Group key={form_group_key++} widths="equal">{this.groupFormData(formData,index,FORM_GROUP_SIZE)}</Form.Group>;
             formGroups.push(formGroup);                        
-            index+=FORM_GROUP_SIZE;
+            index+=FORM_GROUP_SIZE;            
         }
         if(lengthFormData > 0) {
-            const key = Math.random().toString(36).substr(2);
-            let formGroup = <Form.Group key={key} widths="equal">{this.groupFormData(formData,index,lengthFormData)}</Form.Group>;
+            //const key = Math.random().toString(36).substr(2);
+            let formGroup = <Form.Group key={form_group_key} widths="equal">{this.groupFormData(formData,index,lengthFormData)}</Form.Group>;
             formGroups.push(formGroup);
         }
         
         return formGroups;
     }
 
-    render() {        
+    changeHandlerFormValue = (event,data) => {        
+        const formData = [...this.state.formData];
+        formData.forEach(element=>{
+            if(element.label === data.name) {
+                element.value = data.value;
+                return;
+            }
+        });
+        this.setState({formData});        
+    }
+
+    clickHandlerFormSubmit = (event,data) => {        
+        //incorporate original fields in the formData object before sending it to server 
+        const formDataToSend = [...this.state.formData];
+        formDataToSend.forEach(element=>{
+            //find this element in this.accountDetailsConfig and then extract the accessor field from this config
+            const configElement = this.accountDetailsConfig.find(configElement=>(element.label === configElement.label));
+            element.field = configElement.field.trim();                    
+        });
+
+        //Transform formDataToSend to PUT reqBody object containing all the fields with updated values from user 
+        const reqBody = {};
+        formDataToSend.forEach(element=>{            
+            //if element.field is a nested field then xform it to object 
+            if(element.field.includes('.')) {
+                const fields = element.field.split('.');
+                const rootObj = {};
+                let subObj = rootObj;
+                let i = 1;
+                for(;i<fields.length-1; i++) {
+                    subObj[fields[i]] = {};
+                    subObj = subObj[fields[i]];
+                }
+                //set value to the last nested field
+                if(element.value === '') {
+                    subObj[fields[i]] = element.placeholder;                    
+                }   
+                else {
+                    subObj[fields[i]] = element.value;
+                }
+                reqBody[fields[0]] = rootObj;                
+            }
+            else {
+                if(element.value === '') {
+                    reqBody[element.field] = element.placeholder;
+                }
+                else {
+                    reqBody[element.field] = element.value;
+                }
+            }                        
+        });
+
+        //TODO:render warning message if Date is not in UTC format 
+        //call backend api PUT /account  
+        const url = 'https://localhost/ump/user/'+this.username+'/provider/'+this.providerName+'/account/'+this.accountId;        
+        const config = {timeout:10000};
+        Axios.put(url,reqBody,config)
+            .then(response=>{
+                if(response.status === 200 && !response.error) {
+                    console.log('Account update successful');
+                    //show GREEN color flash message "Success"                    
+                    this.setState({visible:true,success:true,error:false,message:'Success',icon:'thumbs up'});
+                    setTimeout(()=>this.setState({visible:false}),1000);                                                                                
+                }   
+                else {
+                    console.log(`ERROR: Account update failed with error ${response.error}`);
+                    //show RED color flash message "Failed"                    
+                    this.setState({visible:true,success:false,error:true,message:`Failed: ${response.error}`,icon:'thumbs down'});
+                    setTimeout(()=>this.setState({visible:false}),1000);                    
+                }
+            })
+            .catch(error=>{
+                console.log(`ERROR: error while PUT /account ${error.stack}`);
+                this.setState({visible:true,success:false,error:true,message:`ERROR: ${error.stack}`,icon:'thumbs down'});
+                setTimeout(()=>this.setState({visible:false}),5000);                    
+            })
+    }
+        
+    render() {  
+        const { visible, success, error, message, icon } = this.state;
         return(
             <div>
                 <Button color="black" style={{float:"right"}} icon="arrow alternate circle left" onClick={this.navigateBack} />                
-                <Header as="h1" image={this.getLogo()}/>
-                <Form>                    
+                <Header as="h1" image={this.getLogo()}/>                
+                <Form onSubmit={this.clickHandlerFormSubmit}>                    
                     {this.loadFormGroups()}                
-                    <Form.Button content="Save" icon="save" attached="bottom"/>
-                </Form>                
+                    <Form.Button className="form-button" content="Save" icon="save"/>
+                </Form>                                                   
+                
+                <Transition visible={visible}>
+                    <Message style={{textAlign:"center"}} icon={icon} success={success} error={error} content={message} />                     
+                </Transition>
             </div>
         )
     }

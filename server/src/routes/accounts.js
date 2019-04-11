@@ -113,9 +113,56 @@ router.delete('/user/:username/provider/:providerName/account/:docId',(req,res,n
     }).catch(next);
 })
 
-//TODO: update an account 
-//TODO: add a bill associated with an account
+//update an account 
+router.put('/user/:username/provider/:providerName/account/:docId',(req,res,next)=> {
+    Promise.resolve().then(async ()=> {
+        const db = app.locals.db;        
+        const collection = req.params.providerName;
+        const docId = req.params.docId;
+        const body = req.body;        
 
+        //TODO: prepare $unset object if exist from req.body
+        const unset = {};
+        for (const key in body) {
+            if(body.hasOwnProperty(key)) {
+                let value = body[key];
+                //if it's an embedded object then make . separated key for $unset
+                let keyEmbedded = undefined;
+                if(typeof value === 'object') {                    
+                    //keyEmbedded = key;
+                    while(typeof value === 'object') {
+                        let tmpKey = Object.getOwnPropertyNames(value)[0];
+                        //keyEmbedded += '.' + tmpKey;
+                        value = value[tmpKey];
+                    }                    
+                }
+                if(value === 'null' || /^\s*$/.test(value)) {
+                    unset[key] = '';    
+                }                
+            }
+        }
+
+        let result = await db.collection(collection).updateOne({_id:ObjectId(docId)},{$set:body});
+        if(Object.keys(unset).length !== 0) {
+            result = await db.collection(collection).updateOne({_id:ObjectId(docId)},{$unset:unset});
+        }
+        
+        if (result) {
+            if (result.modifiedCount === 1) {
+                res.status(200).send({message: 'account updated successfully'});
+            }
+            else {
+                res.status(200).send({error: `account didn't get updated`});
+            }
+        }
+        else {
+            res.sendStatus(500);
+        }
+              
+    }).catch(next);
+})
+
+//Delete an user
 router.delete('/user',(req,res,next) => {
     Promise.resolve().then(async ()=> {
         const db = app.locals.db;
