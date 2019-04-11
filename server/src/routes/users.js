@@ -1,5 +1,5 @@
-const express = require('express');
-const app = require('../server');
+import express from 'express';
+import app from '../server';
 
 const router = express.Router();
 
@@ -122,4 +122,4 @@ router.delete('/user',(req,res,next) => {
     }).catch(next);
 })
 
-module.exports = router;
+export default router;

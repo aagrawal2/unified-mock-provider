@@ -1,7 +1,7 @@
+import app from '../server';
+import { ObjectId } from 'mongodb';
+
 const router = require('express').Router();
-const app = require('../server');
-const ObjectId = require('mongodb').ObjectId;
-//const uniqid = require('uniqid'); //move this from server side to client side
 
 //add new account(s) to db
 router.post('/user/:username/provider/:providerName/accounts', (req,res,next) => {    
@@ -12,7 +12,7 @@ router.post('/user/:username/provider/:providerName/accounts', (req,res,next) =>
         //mutate req.body to have username in each document
         const username = req.params.username;
         const userAccounts = req.body;        
-        for (userAccount of userAccounts) {
+        for (const userAccount of userAccounts) {
             userAccount.username = username;
         }
         
@@ -184,4 +184,4 @@ router.delete('/user',(req,res,next) => {
     }).catch(next);
 })
 
-module.exports = router;
+export default router;

@@ -1,25 +1,25 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const args = require('minimist')(process.argv.splice(2));
-const readFileSync = require('fs').readFileSync;
-const createServerHttps = require('https').createServer;
-const createServerHttp = require('http').createServer;
-const MongoClient = require('mongodb').MongoClient;
-const path = require('path');
-//const cors = require('cors');
-const dbConfig = require('../config/db.json');
+import express from 'express';
+import bodyParser from 'body-parser';
+import { readFileSync } from 'fs';
+import { createServer as createServerHttps } from 'https';
+import { createServer as createServerHttp } from 'http';
+import MongoClient from 'mongodb';
+import path from 'path';
+import dbConfig from '../config/db.json';
 
+const args = require('minimist')(process.argv.splice(2));
 const ENV = args['ENV'].toLowerCase() || 'dev';
 const HTTP_PORT = args['HTTP_PORT'] || 80;
 const HTTPS_PORT = args['HTTPS_PORT'] || 443;
 
 //setup an express app
 const app = express();
+
 //exporting this app for other modules to retrive its locals properties 
-module.exports = app;
+export default app;
 //this is deliberately imported after app exports coz this app is getting imported in users.js 
-const userRoutes = require('./routes/users');
-const accountRoutes = require('./routes/accounts');
+import userRoutes from './routes/users';
+import accountRoutes from './routes/accounts';
 
 //custom middleware to handle cross-origin requests
 const allowCrossDomain = (req,res,next) => {

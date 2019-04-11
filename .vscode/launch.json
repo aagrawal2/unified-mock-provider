@@ -8,6 +8,7 @@
             "type": "node",
             "request": "launch",
             "name": "nodemon",
+            //"runtimeExecutable": "nodemon",
             "runtimeExecutable": "${workspaceFolder}/server/node_modules/nodemon/bin/nodemon.js",            
             "runtimeArgs": ["--nolazy","--require","babel-register"],            
             //"program": "${workspaceFolder}/server/src/server.js",
