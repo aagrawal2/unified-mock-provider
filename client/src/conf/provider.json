@@ -1,11 +1,11 @@
 {
     "names": [
-        {"text":"Bank of America","value":"bofa","accounttypes":["Checking","Savings","CreditCard","Mortgage"]},        
-        {"text":"Citi Bank","value":"citi","accounttypes":["Checking","Savings","CreditCard","Mortgage"]},
-        {"text":"Amex","value":"amex","accounttypes":["Checking","Savings","CreditCard","Mortgage"]},
-        {"text":"First Tech Credit Union","value":"fcu","accounttypes":["Checking","Savings","CreditCard","Mortgage"]},
-        {"text":"Wells Fargo","value":"wf","accounttypes":["Checking","Savings","CreditCard","Mortgage"]},
-        {"text":"Comcast","value":"comcast","accounttypes":["Utility"]}
+        {"text":"Bank of America","value":"bofa","entities":["account","transaction"],"accounttypes":["Checking","Savings","CreditCard","Mortgage"]},        
+        {"text":"Citi Bank","value":"citi","entities":["account","transaction"],"accounttypes":["Checking","Savings","CreditCard","Mortgage"]},
+        {"text":"Amex","value":"amex","entities":["account","transaction"],"accounttypes":["Checking","Savings","CreditCard","Mortgage"]},
+        {"text":"First Tech Credit Union","value":"fcu","entities":["account","transaction"],"accounttypes":["Checking","Savings","CreditCard","Mortgage"]},
+        {"text":"Wells Fargo","value":"wf","entities":["account","transaction"],"accounttypes":["Checking","Savings","CreditCard","Mortgage"]},
+        {"text":"Comcast","value":"comcast","entities":["bill"],"accounttypes":["Utility"]}
     ],
     "bofa": [        
         {
@@ -40,6 +40,126 @@
         }
     ],
     "citi": [
+        {
+            "Header": "Description",
+            "accessor": "accountDesc"
+        },
+        {
+            "Header": "Ac Num",
+            "accessor": "accountNumber"
+        },
+        {
+            "Header": "Id",
+            "accessor": "_id"
+        },
+        {
+            "Header": "Ac Type",
+            "accessor": "accountType"
+        },
+        {
+            "Header": "Curr Balance",
+            "accessor": "currBalance"
+        },        
+        {
+            "Header": "Credit Line",
+            "accessor": "creditLine"
+        },
+        {
+            "Header": "Interest Rate",
+            "accessor": "interestRate"
+        }
+    ],
+    "amex": [
+        {
+            "Header": "Description",
+            "accessor": "accountDesc"
+        },
+        {
+            "Header": "Ac Num",
+            "accessor": "accountNumber"
+        },
+        {
+            "Header": "Id",
+            "accessor": "_id"
+        },
+        {
+            "Header": "Ac Type",
+            "accessor": "accountType"
+        },
+        {
+            "Header": "Curr Balance",
+            "accessor": "currBalance"
+        },        
+        {
+            "Header": "Credit Line",
+            "accessor": "creditLine"
+        },
+        {
+            "Header": "Interest Rate",
+            "accessor": "interestRate"
+        }
+    ],
+    "wf": [
+        {
+            "Header": "Description",
+            "accessor": "accountDesc"
+        },
+        {
+            "Header": "Ac Num",
+            "accessor": "accountNumber"
+        },
+        {
+            "Header": "Id",
+            "accessor": "_id"
+        },
+        {
+            "Header": "Ac Type",
+            "accessor": "accountType"
+        },
+        {
+            "Header": "Curr Balance",
+            "accessor": "currBalance"
+        },        
+        {
+            "Header": "Credit Line",
+            "accessor": "creditLine"
+        },
+        {
+            "Header": "Interest Rate",
+            "accessor": "interestRate"
+        }
+    ],
+    "fcu": [
+        {
+            "Header": "Description",
+            "accessor": "accountDesc"
+        },
+        {
+            "Header": "Ac Num",
+            "accessor": "accountNumber"
+        },
+        {
+            "Header": "Id",
+            "accessor": "_id"
+        },
+        {
+            "Header": "Ac Type",
+            "accessor": "accountType"
+        },
+        {
+            "Header": "Curr Balance",
+            "accessor": "currBalance"
+        },        
+        {
+            "Header": "Credit Line",
+            "accessor": "creditLine"
+        },
+        {
+            "Header": "Interest Rate",
+            "accessor": "interestRate"
+        }
+    ],
+    "comcast": [
         {
             "Header": "Description",
             "accessor": "accountDesc"

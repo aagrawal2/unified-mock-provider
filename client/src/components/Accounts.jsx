@@ -61,16 +61,21 @@ export default class Accounts extends Component {
     }
 
     getProviderAccountTypes = () => {
-        let accountTypes;
-        Provider.names.find(element=>{
-            if(element.value === this.providerName) {                
-                accountTypes = element.accounttypes;
-                return true;
-            }
-        });
-        return accountTypes;
+        const selectedProvider = Provider.names.find(element=>{
+            return element.value === this.providerName;
+        });    
+        
+        return selectedProvider.accounttypes;
     }
  
+    getProviderEntities = () => {
+        const selectedProvider = Provider.names.find(element=>{
+            return element.value === this.providerName;
+        });    
+        
+        return selectedProvider.entities;
+    }
+
     //Delete Account 
     deleteAccountRow = row => {        
         //Delete account from tableData in-memory
@@ -247,6 +252,32 @@ export default class Accounts extends Component {
         return dropdownItems;
     }
     
+    loadProviderMenuItems = () => {
+        const dropdownItems = [];        
+        const entities = this.getProviderEntities();
+        entities.forEach((value,index) => {
+            if(value.toLowerCase() === 'account') {
+                const dropdownItem = <Dropdown key={index} item text="Create Accounts">
+                        <Dropdown.Menu>
+                            <Dropdown.Header>with default values</Dropdown.Header>
+                                {this.loadProviderDropdownItems()}
+                        </Dropdown.Menu>
+                    </Dropdown>                
+                dropdownItems.push(dropdownItem);
+            }
+            else if(value.toLowerCase() === 'transaction') {
+                const dropdownItem = <Dropdown key={index} item text="Create Transactions" />;
+                dropdownItems.push(dropdownItem);
+            }
+            else if(value.toLowerCase() === 'bill') {
+                const dropdownItem = <Dropdown key={index} item text="Create Bills" />;
+                dropdownItems.push(dropdownItem);
+            }           
+        });
+        
+        return dropdownItems;
+    }
+
     //navigateBack = () => this.props.history.push('/provider')
     navigateBack = () => this.props.navigateBack()
     
@@ -257,15 +288,8 @@ export default class Accounts extends Component {
             <div>
                 <Button color="black" style={{float:"right"}} icon="arrow alternate circle left" onClick={this.navigateBack} />
                 <div className="accounts">
-                    <Menu pointing secondary>
-                        <Dropdown item text="Create Accounts"> 
-                            <Dropdown.Menu>
-                                <Dropdown.Header>with default values</Dropdown.Header>
-                                {this.loadProviderDropdownItems()}
-                            </Dropdown.Menu>                                   
-                        </Dropdown>    
-                        <Dropdown item text="Create Transactions" />
-                        <Dropdown item text="Create Bills" />
+                    <Menu pointing secondary>                        
+                        {this.loadProviderMenuItems()}
                         <Menu.Menu position="right">
                             <Menu.Item name="Logout"/>
                         </Menu.Menu>

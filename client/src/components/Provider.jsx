@@ -1,7 +1,4 @@
 import React from 'react';
-/* import DropdownButton from 'react-bootstrap/DropdownButton';
-import Button from 'react-bootstrap/Button';
-import Dropdown from 'react-bootstrap/Dropdown'; */
 import {Dropdown, Button} from 'semantic-ui-react';
 import BofaLogo from '../images/bofa.jpg';
 import CitiLogo from '../images/citi.jpg';
@@ -53,7 +50,7 @@ export default class Provider extends React.Component {
     onChangeProvider = (event, data) => {                        
         const providerName = data.value;
         //render Accounts component
-        this.props.setRenderAccount(true,providerName);        
+        this.props.setRenderAccounts(true,providerName);        
     }
     
     render() {             
