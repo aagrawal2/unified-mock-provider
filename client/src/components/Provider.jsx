@@ -12,7 +12,8 @@ import '../scss/Provider.scss';
 
 import provider from '../conf/provider.json';
 
-const loadProviderLogos = () => {
+//Load provider logos in the choose provider dropdown
+(() => {
     provider.names.forEach(provider => {
         if (provider.value.toLowerCase().includes('bofa')) {
             provider.image = { avatar: true, src: BofaLogo };
@@ -32,10 +33,8 @@ const loadProviderLogos = () => {
         else if (provider.value.toLowerCase().includes('wf')) {
             provider.image = { avatar: true, src: WellsFargoLogo };
         }
-    })
-};
-
-loadProviderLogos();
+    });
+})();
 
 const onChangeProvider = (props,data) => {
     const providerName = data.value;
