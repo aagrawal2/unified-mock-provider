@@ -165,7 +165,7 @@ export default class UMP extends Component {
                         {(isSignIn || isSignUp) && <Route exact path="/provider" render={props => <Provider {...props} username={this.username} 
                             setRenderAccounts={this.setRenderAccounts} navigateBack={this.logOut}/>} />}                        
                         {(isSignIn || isSignUp) && <Route exact path="/provider/accounts" render={props => <Accounts {...props} providerName={this.providerName} username={this.username}
-                            navigateBack={()=>this.setRenderAccounts(false)} />} />}
+                            navigateBack={()=>this.setRenderAccounts(false,this.providerName)} />} />}
                         <Route exact path="/provider/account/:accountId" render={ props => <Account {...props} providerName={this.providerName} username={this.username} 
                             navigateBack={()=>this.setRenderAccounts(true)} />} />
                         <Route render={()=><center><h5>You are not signed in or Page Not Found</h5></center>}/>
