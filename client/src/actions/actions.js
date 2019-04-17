@@ -1,14 +1,14 @@
-export const getAccount = accountData => {
+export const getAccount = accounts => {
     return {
         type: 'GET_ACCOUNT',
-        payload: accountData
+        payload: accounts
     }
 };
 
-export const addAccount = accountData => {
+export const addAccount = account => {
     return {
         type: 'ADD_ACCOUNT',
-        payload: accountData
+        payload: account
     }
 };
 

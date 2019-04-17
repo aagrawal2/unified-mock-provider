@@ -11,18 +11,17 @@ import randomstring from 'randomstring';
 import Axios from "axios";
 import { connect } from "react-redux";
 import { getAccount, addAccount, deleteAccount } from '../actions/actions';
-import store from '../store/store';
 
 const mapStateToProps = state => {
     return {
-        tableData: state.tableData
+        accounts: state.accounts
     };
 };
 
 function mapDispatchToProps(dispatch) {
     return {
-        getAccount: accountData => dispatch(getAccount(accountData)),
-        addAccount: accountData => dispatch(addAccount(accountData)),
+        getAccount: accounts => dispatch(getAccount(accounts)),
+        addAccount: account => dispatch(addAccount(account)),
         deleteAccount: accountRow => dispatch(deleteAccount(accountRow))
     };
 };
@@ -42,9 +41,9 @@ const componentDidMount = (props) => {
     Axios.get(url, config)
         .then(response => {
             if (response.status === 200 && !response.data.error) {                
-                const tableData = response.data;                
-                //dispatch an action to Redux store 
-                props.getAccount(tableData);
+                const existingAccounts = response.data;                
+                //dispatch an action to Redux store for change in state
+                props.getAccount(existingAccounts);
                 //this.setState({ tableData });
             }
         })
@@ -103,12 +102,9 @@ const getProviderEntities = (providerName) => {
 
 //Delete Account 
 const deleteAccountRow = (props,row) => {        
-        //Delete account from tableData in-memory               
-        const originalTableData = store.getState().tableData;
-        const tableData = originalTableData.filter(element=>(element._id !== row._id));
-        //dispatch an action to redux store for change of state
-        props.deleteAccount(tableData);
-        //this.setState({tableData});
+        //Delete account from redux store (in-memory)                       
+        //make use of redux middleware to have the delete logic outside the react component
+        props.deleteAccount(row);  //dispatch delete action
         
         //Delete account from DB filesystem 
         const url = 'https://localhost/ump/user/'+props.username+'/provider/'+props.providerName+'/account/'+row._id;
@@ -260,10 +256,12 @@ const clickHandlerCreateAccount = (event, data, props) => {
         .then(response => {
             if (response.status === 201) {
                 //refresh this component to reflect the newly added account
-                const tableData = [ ...props.tableData ];
+                //Use of redux and middleware 
+                props.addAccount(response.data[0]);
+                /* const tableData = [ ...props.tableData ];
                 tableData.push(response.data[0]);
                 //dispatch an action to redux store for the change in state
-                props.addAccount(tableData);
+                props.addAccount(tableData); */
                 /* const tableData = [...this.state.tableData];
                 tableData.push(response.data[0])
                 this.setState({ tableData }) */
@@ -314,7 +312,7 @@ const loadProviderMenuItems = (props) => {
 //const navigateBack = () => props.navigateBack()
 
 const AccountsRedux = (props) => {
-    const { providerName, tableData } = props;            
+    const { providerName, accounts } = props;            
     const columns = Provider[providerName];
     
     const navigateBack = () => props.navigateBack();
@@ -330,7 +328,7 @@ const AccountsRedux = (props) => {
                     </Menu.Menu>
                 </Menu>
             </div>
-            <ReactTable className="accounts-table" defaultPageSize={5} data={tableData} columns={columns} />
+            <ReactTable className="accounts-table" defaultPageSize={5} data={accounts} columns={columns} />
         </div>
     );
 

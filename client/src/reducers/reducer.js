@@ -1,11 +1,11 @@
 const initialState = {    
-    tableData: undefined
+    accounts: undefined
 }
 
 const reducer = (state = initialState, action) => {    
-    if(action.type === 'GET_ACCOUNT' || action.type === 'ADD_ACCOUNT' || action.type === 'DEL_ACCOUNT') {
+    if(action.type === 'EXISTING_ACCOUNTS' || action.type === 'ACCOUNTS_POST_ADD' || action.type === 'ACCOUNTS_POST_DELETE') {
         const newState = { ...state };
-        newState.tableData = action.payload;
+        newState.accounts = action.payload;
         return newState;
     }    
     else
