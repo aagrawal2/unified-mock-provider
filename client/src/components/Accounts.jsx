@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import lifecycle from 'react-pure-lifecycle';
 import { Menu, Dropdown, Button } from "semantic-ui-react";
 import ReactTable from 'react-table';
@@ -31,7 +31,7 @@ function mapDispatchToProps(dispatch) {
 const componentDidMount = (props) => {
     const username = props.username;
     const providerName = props.providerName;
-    //const columns = [ ...Provider[props.providerName] ];
+    const columns = Provider[props.providerName];
 
     includeLinkInAccountId(columns);
     includeColumnDeleteAction(props,columns);
@@ -63,6 +63,7 @@ const includeLinkInAccountId = (columns) => {
         if (column.accessor === '_id') {
             if(!column.Cell)
                 column.Cell = e => <Link to={`/provider/account/${e.value}`}><u>{e.value}</u></Link>
+            return;    
         }
     });
 }
@@ -311,12 +312,10 @@ const loadProviderMenuItems = (props) => {
 
 //navigateBack = () => this.props.history.push('/provider')
 //const navigateBack = () => props.navigateBack()
-let columns = undefined;
 
 const AccountsRedux = (props) => {
-    const { providerName, tableData } = props;        
-    columns = !columns ? [ ...Provider[providerName] ] : columns;
-    //const columns = [ ...Provider[providerName] ];
+    const { providerName, tableData } = props;            
+    const columns = Provider[providerName];
     
     const navigateBack = () => props.navigateBack();
 
