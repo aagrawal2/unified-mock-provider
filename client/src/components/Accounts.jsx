@@ -1,6 +1,6 @@
 import React from "react";
 import lifecycle from 'react-pure-lifecycle';
-import { Menu, Dropdown, Button } from "semantic-ui-react";
+import { Menu, Dropdown, Button, Header } from "semantic-ui-react";
 import ReactTable from 'react-table';
 import '../scss/Accounts.scss';
 import Provider from '../conf/provider.json';
@@ -11,6 +11,7 @@ import randomstring from 'randomstring';
 import Axios from "axios";
 import { connect } from "react-redux";
 import { getAccount, addAccount, deleteAccount } from '../actions/actions';
+import { getProviderLogo } from '../shared/utility';
 
 const mapStateToProps = state => {
     return {
@@ -79,7 +80,10 @@ const includeColumnDeleteAction = (props,columns) => {
             return <Button icon="delete" color="red" size="mini" onClick={() => { deleteAccountRow(props,row) }} />
         },
         sortable: false,
-        width: 70
+        width: 70,
+        style: {
+            textAlign: 'center'
+        }
     };
     columns.push(action);
 }
@@ -92,13 +96,13 @@ const getProviderAccountTypes = (providerName) => {
         return selectedProvider.accounttypes;
 }
  
-const getProviderEntities = (providerName) => {
+/* const getProviderEntities = (providerName) => {
         const selectedProvider = Provider.names.find(element=>{
             return element.value === providerName;
         });    
         
         return selectedProvider.entities;
-}
+} */
 
 //Delete Account 
 const deleteAccountRow = (props,row) => {        
@@ -282,7 +286,7 @@ const loadProviderDropdownItems = (props) => {
     return dropdownItems;
 }
     
-const loadProviderMenuItems = (props) => {
+/* const loadProviderMenuItems = (props) => {
         const dropdownItems = [];        
         const entities = getProviderEntities(props.providerName);
         entities.forEach((value,index) => {
@@ -306,7 +310,7 @@ const loadProviderMenuItems = (props) => {
         });
         
         return dropdownItems;
-}
+} */
 
 //navigateBack = () => this.props.history.push('/provider')
 //const navigateBack = () => props.navigateBack()
@@ -320,15 +324,22 @@ const AccountsRedux = (props) => {
     return (
         <div>
             <Button color="black" style={{ float: "right" }} icon="arrow alternate circle left" onClick={navigateBack} />
+            <Header as="h1" image={getProviderLogo(providerName)}/>
             <div className="accounts">
                 <Menu pointing secondary>
-                    {loadProviderMenuItems(props)}
+                    <Dropdown item text="Create Accounts">
+                        <Dropdown.Menu>
+                            <Dropdown.Header>with default values</Dropdown.Header>
+                                {loadProviderDropdownItems(props)}
+                        </Dropdown.Menu>
+                    </Dropdown>                    
                     <Menu.Menu position="right">
                         <Menu.Item name="Logout" />
                     </Menu.Menu>
                 </Menu>
             </div>
-            <ReactTable className="accounts-table" defaultPageSize={5} data={accounts} columns={columns} />
+            <ReactTable className="accounts-table" defaultPageSize={5} data={accounts} columns={columns}
+                noDataText="You don't have any accounts yet" />
         </div>
     );
 
