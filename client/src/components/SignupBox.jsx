@@ -1,5 +1,6 @@
 import React from 'react';
 import axios from 'axios';
+import Backend from '../conf/backend.json';
 
 export default class SignupBox extends React.Component {
     constructor(props) {
@@ -64,13 +65,13 @@ export default class SignupBox extends React.Component {
 
         //create user by calling backend /user api - XMLHttpRequest instance 
         const config = {                      
-            timeout: 10000 
+            timeout: Backend.timeout
         };
         const reqBody = {
             username: this.state.usernname,
             password: this.state.password
         }
-        axios.post('https://localhost/ump/user',reqBody,config).then(response => {
+        axios.post(Backend.baseURL+'/user',reqBody,config).then(response => {
             //enable the previously disabled submit button
             this.setState({btnDisabled: false});
 

@@ -9,6 +9,7 @@ import ComcastLogo from '../images/comcast.jpg';
 import FirstTechLogo from '../images/firsttech.jpg';
 import WellsFargoLogo from '../images/wellsfargo.jpg';
 import '../scss/Account.scss';
+import Backend from '../conf/backend.json';
 
 export default class Account extends React.Component {    
     
@@ -31,9 +32,11 @@ export default class Account extends React.Component {
 
     componentDidMount = () => {        
         //call /account/${accountId} api to get details about the account
-        const url = 'https://localhost/ump/user/'+this.username+'/provider/'+this.providerName+'/account/'+this.accountId;
-        const config = {timeout:10000};
-        
+        const url = Backend.baseURL+'/user/'+this.username+'/provider/'+this.providerName+'/account/'+this.accountId;
+        const config = {
+            timeout: Backend.timeout
+        }        
+
         Axios.get(url,config)
             .then(response=>{
                 if(response.status === 200 && !response.data.error) {
@@ -217,9 +220,9 @@ export default class Account extends React.Component {
         });
 
         //TODO:render warning message if Date is not in UTC format 
-        //call backend api PUT /account  
-        const url = 'https://localhost/ump/user/'+this.username+'/provider/'+this.providerName+'/account/'+this.accountId;        
-        const config = {timeout:10000};
+        //call backend api PUT /account          
+        const url = Backend.baseURL+'/user/'+this.username+'/provider/'+this.providerName+'/account/'+this.accountId;
+        const config = {timeout:Backend.timeout};
         Axios.put(url,reqBody,config)
             .then(response=>{
                 if(response.status === 200 && !response.error) {

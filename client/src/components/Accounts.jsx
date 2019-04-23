@@ -12,6 +12,7 @@ import Axios from "axios";
 import { connect } from "react-redux";
 import { getAccount, addAccount, deleteAccount } from '../actions/actions';
 import { getProviderLogo } from '../shared/utility';
+import Backend from '../conf/backend.json';
 
 const mapStateToProps = state => {
     return {
@@ -36,9 +37,9 @@ const componentDidMount = (props) => {
     includeLinkInAccountId(columns);
     includeColumnDeleteAction(props,columns);
 
-    //call backend api to get /accounts of an user for a given provider
-    const url = 'https://localhost/ump/user/' + username + '/provider/' + providerName + '/accounts';
-    const config = { timeout: 10000 };
+    //call backend api to get /accounts of an user for a given provider    
+    const url = Backend.baseURL+'/user/'+username+'/provider/'+providerName+'/accounts';
+    const config = { timeout: Backend.timeout };
     Axios.get(url, config)
         .then(response => {
             if (response.status === 200 && !response.data.error) {                
@@ -111,8 +112,8 @@ const deleteAccountRow = (props,row) => {
         props.deleteAccount(row);  //dispatch delete action
         
         //Delete account from DB filesystem 
-        const url = 'https://localhost/ump/user/'+props.username+'/provider/'+props.providerName+'/account/'+row._id;
-        const config = {timeout:10000};
+        const url = Backend.baseURL+'/user/'+props.username+'/provider/'+props.providerName+'/account/'+row._id;
+        const config = {timeout: Backend.timeout};
         Axios.delete(url,config)
             .then(response=>{
                 if(response.status === 200 && !response.data.error) {
@@ -254,8 +255,8 @@ const clickHandlerCreateAccount = (event, data, props) => {
     });
 
     //call backend api to create account 
-    const url = 'https://localhost/ump/user/' + props.username + '/provider/' + providerName + '/accounts';
-    const config = { timeout: 10000 };
+    const url = Backend.baseURL+'/user/'+props.username+'/provider/'+providerName+'/accounts';
+    const config = { timeout: Backend.timeout };
     Axios.post(url, accountPayload, config)
         .then(response => {
             if (response.status === 201) {

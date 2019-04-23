@@ -1,5 +1,6 @@
 import React from 'react';
 import Axios from 'axios';
+import Backend from '../conf/backend.json';
 
 export default class SigninBox extends React.Component {
     constructor(props) {
@@ -31,10 +32,10 @@ export default class SigninBox extends React.Component {
 
         //call backend /user api to signin 
         const config = {
-            baseURL: 'https://localhost/ump',
+            baseURL: Backend.baseURL,
             url: '/user/?username='+username+'&password='+password,
             method: 'get',
-            timeout: 10000
+            timeout: Backend.timeout
         };
         Axios(config).then(response => {
             if (response.status === 200 && ! response.data.error) {
