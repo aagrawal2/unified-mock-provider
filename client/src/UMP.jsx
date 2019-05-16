@@ -6,6 +6,7 @@ import _ from 'lodash';
 import SigninBox from './components/SigninBox';
 import SignupBox from './components/SignupBox';
 import Provider from './components/Provider';
+import Transactions from './components/Transactions';
 
 import 'semantic-ui-css/semantic.min.css';
 import './scss/_loginSty.scss';
@@ -34,8 +35,11 @@ export default class UMP extends Component {
             isSigninOpen: true,
             isSignupOpen: false,
             isSignIn: false,
-            isSignUp: false,                                   
-            renderAccounts: false
+            isSignUp: false, 
+            renderProvider:false,                                  
+            renderAccounts: false,
+            renderAccount: false,
+            renderTransactions: false
         }                
     }
 
@@ -49,12 +53,17 @@ export default class UMP extends Component {
 
     setSignIn = (flag,username) => {
         this.username = username;
-        this.setState({isSignIn: flag});        
+        this.setState({isSignIn: flag, renderProvider: flag});        
     }    
 
     setSignUp = (flag,username) => {
         this.username = username;
-        this.setState({isSignUp: flag});
+        this.setState({isSignUp: flag, renderProvider: flag});
+    }
+
+    setRenderProivder = (flag,providerName) => {
+        this.providerName = providerName;
+        this.setState({renderProvider: flag});
     }
 
     setRenderAccounts = (flag,providerName) => {
@@ -62,7 +71,15 @@ export default class UMP extends Component {
         this.setState({renderAccounts: flag})                        
     }
 
-    logOut = () => this.setState({isSignIn:false,isSignUp:false})
+    setRenderAccount = (flag) => {
+        this.setState({renderAccount:flag});
+    }
+
+    setRenderTransactions = (flag,accountId,accountType) => {
+        this.accountId = accountId;
+        this.accountType = accountType;
+        this.setState({renderTransactions: flag});
+    }    
 
     logosInGrid = _.times(12, i => {
             switch(i) {
@@ -145,29 +162,45 @@ export default class UMP extends Component {
         );
     }
 
+    logout = () => {
+        this.setState({isSignIn:false,isSignUp:false});
+    }
+
     render() {       
-        const { isSignIn, isSignUp, renderAccounts } = this.state;
+        const { isSignIn, isSignUp, renderProvider, renderAccounts, renderAccount, renderTransactions } = this.state;
         return (  
             <BrowserRouter> 
                 <Fragment>  
                     {
-                        (!isSignIn && !isSignUp) && <Redirect to="/login" />
+                      ( (!isSignIn && !isSignUp) && <Redirect to="/login" /> )
+                    
+                    ||
+                        (((isSignIn || isSignUp) && renderTransactions) && <Redirect to="/provider/account/transactions" />)
+                    
+                    ||
+                        (((isSignIn || isSignUp) && renderAccount) && <Redirect to={"/provider/account/"+this.accountId} />)
+                    || 
+                        (((isSignIn || isSignUp) && renderProvider) && <Redirect to="/provider"/> )                       
+                     
+                    ||
+                        (((isSignIn || isSignUp) && renderAccounts) && <Redirect to="/provider/accounts"/> )                       
                     }
-                    { 
-                        ((isSignIn || isSignUp) && !renderAccounts) && <Redirect to="/provider"/>                        
-                    } 
-                    {
-                        ((isSignIn || isSignUp) && renderAccounts) && <Redirect to="/provider/accounts"/>                        
-                    }
-                    <Switch>                        
+                    <Switch>
                         <Route exact path="/" render={()=><Redirect to="/login" />} />
                         <Route exact path="/login" render={this.signUpSignInBox} />            
                         {(isSignIn || isSignUp) && <Route exact path="/provider" render={props => <Provider {...props} username={this.username} 
-                            setRenderAccounts={this.setRenderAccounts} navigateBack={this.logOut}/>} />}                        
+                            setRenderAccounts={this.setRenderAccounts} setRenderProvider={this.setRenderProivder}
+                            navigateBack={this.logout}/>} />}                        
                         {(isSignIn || isSignUp) && <Route exact path="/provider/accounts" render={props => <Accounts {...props} providerName={this.providerName} username={this.username}
-                            navigateBack={()=>this.setRenderAccounts(false,this.providerName)} />} />}
-                        <Route exact path="/provider/account/:accountId" render={ props => <Account {...props} providerName={this.providerName} username={this.username} 
-                            navigateBack={()=>this.setRenderAccounts(true)} />} />
+                            logout={this.logout} setRenderAccounts={this.setRenderAccounts} navigateBack={()=>this.setState({renderAccounts:false,renderProvider:true})} />} />}
+                        {(isSignIn || isSignUp) && <Route exact path="/provider/account/transactions" 
+                            render={props => <Transactions {...props} providerName={this.providerName} username={this.username}
+                            accountId={this.accountId} accountType={this.accountType} 
+                            navigateBack={()=>this.setState({renderTransactions:false,renderAccount:true})} logout={this.logout} />} />}    
+                        {(isSignIn || isSignUp) && <Route exact path="/provider/account/:accountId" render={ props => <Account {...props} providerName={this.providerName} username={this.username} 
+                            navigateBack={()=>this.setState({renderAccount:false,renderAccounts:true})} setRenderAccounts={this.setRenderAccounts} 
+                            setRenderTransactions={this.setRenderTransactions} logout={this.logout}/>}/> }                       
+                            
                         <Route render={()=><center><h5>You are not signed in or Page Not Found</h5></center>}/>
                     </Switch>                    
                 </Fragment>                          

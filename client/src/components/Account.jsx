@@ -1,7 +1,7 @@
 import React from 'react';
-import { Form, Header, Button, Transition, Message } from 'semantic-ui-react';
+import { Form, Header, Button, Transition, Message, Menu } from 'semantic-ui-react';
 import Axios from 'axios';
-import AccountDetails from '../conf/provider-accounts.json';
+import AccountDetails from '../conf/provider-details.json';
 import BofaLogo from '../images/bofa.jpg';
 import CitiLogo from '../images/citi.jpg';
 import AmexLogo from '../images/amex.jpg';
@@ -21,7 +21,8 @@ export default class Account extends React.Component {
             success: false,
             error: false,
             message: '',
-            icon: ''            
+            icon: '',
+            activeItem: 'Show Transactions'             
         };
         this.accountId = this.props.match.params.accountId;
         this.username = this.props.username;
@@ -52,8 +53,8 @@ export default class Account extends React.Component {
     }
 
     navigateBack = () => {
-        //this.props.navigateBack();
-        this.props.history.push('/provider/accounts');
+        this.props.navigateBack();
+        //this.props.history.push('/provider/accounts');
     }
 
     getLogo = () => {
@@ -100,7 +101,7 @@ export default class Account extends React.Component {
 
         //Map accountData field names with Labels from config file
         this.accountType = accountTypeValue.toLowerCase();
-        this.accountDetailsConfig = AccountDetails[this.providerName.toLowerCase()][this.accountType];        
+        this.accountDetailsConfig = AccountDetails[this.providerName.toLowerCase()].accounts[this.accountType];        
         this.accountDetailsConfig.forEach(element=>{
             const label = element.label;
             let placeholder;
@@ -147,7 +148,7 @@ export default class Account extends React.Component {
         if(!this.providerName) {
             return;
         }
-        const FORM_GROUP_SIZE = AccountDetails[this.providerName].form_group_size;
+        const FORM_GROUP_SIZE = AccountDetails[this.providerName].accounts.form_group_size;
         let index = 0;        
         let lengthFormData = formData.length;        
         let form_group_key = 0;        
@@ -244,22 +245,57 @@ export default class Account extends React.Component {
                 setTimeout(()=>this.setState({visible:false}),5000);                    
             })
     }
-        
+     
+    showTransactions = (e,{name}) => {
+        this.setState({activeItem:name});        
+        this.props.setRenderTransactions(true,this.accountId,this.accountType);
+    }
+
+    logout = (e,{name}) => {
+        this.setState({activeItem:name});
+        this.props.logout();
+    }
+
     render() {  
-        const { visible, success, error, message, icon } = this.state;
-        return(
-            <div>
-                <Button color="black" style={{float:"right"}} icon="arrow alternate circle left" onClick={this.navigateBack} />                
-                <Header as="h1" image={this.getLogo()}/>                
-                <Form onSubmit={this.clickHandlerFormSubmit}>                    
-                    {this.loadFormGroups()}                
-                    <Form.Button className="form-button" content="Save" icon="save"/>
-                </Form>                                                   
-                
-                <Transition visible={visible}>
-                    <Message style={{textAlign:"center"}} icon={icon} success={success} error={error} content={message} />                     
-                </Transition>
+        const { visible, success, error, message, icon, activeItem } = this.state;
+        return (
+          <div>
+            <Button
+              color="black"
+              style={{ float: "right" }}
+              icon="arrow alternate circle left"
+              onClick={this.navigateBack}
+            />
+            <Header as="h1" image={this.getLogo()} />
+
+            <div className="account-menu">
+              <Menu pointing secondary>
+                <Menu.Item name="Show Transactions" active={activeItem === "Show Transactions"} onClick={this.showTransactions}/>
+                <Menu.Menu position="right">
+                  <Menu.Item name="Logout" active={activeItem === "Logout"} onClick={this.logout}/>
+                </Menu.Menu>
+              </Menu>
             </div>
-        )
+
+            <Form className="account-form" onSubmit={this.clickHandlerFormSubmit}>
+              {this.loadFormGroups()}
+              <Form.Button
+                className="form-button"
+                content="Save"
+                icon="save"
+              />
+            </Form>
+
+            <Transition visible={visible}>
+              <Message
+                style={{ textAlign: "center" }}
+                icon={icon}
+                success={success}
+                error={error}
+                content={message}
+              />
+            </Transition>
+          </div>
+        );
     }
 }

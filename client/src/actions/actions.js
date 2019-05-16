@@ -1,7 +1,27 @@
-export const getAccount = accounts => {
-    return {
-        type: 'GET_ACCOUNT',
-        payload: accounts
+import Axios from "axios";
+
+export const getAccounts = (url,config) => {    
+    //return function to make use of redux-thunk middleware for handling async logic here
+    return (dispatch,getState) => {
+        Axios.get(url,config)
+            .then(response => {
+                if(response.status === 200 && !response.data.error) {
+                    const existingAccounts = response.data;
+                    const action = {
+                        type: 'EXISTING_ACCOUNTS',
+                        payload: existingAccounts
+                    };
+                    dispatch(action);
+                }
+            })
+            .catch(error => {
+                console.log(`Error response from server:${error.stack}`);
+                const action = {
+                    type: 'ERROR',
+                    payload: error.stack
+                };
+                dispatch(action);
+            });
     }
 };
 
@@ -18,3 +38,4 @@ export const deleteAccount = accountRow => {
         payload: accountRow
     }
 };
+

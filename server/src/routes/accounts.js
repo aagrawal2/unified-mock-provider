@@ -51,46 +51,6 @@ router.get('/user/:username/provider/:providerName/account/:accountId',(req,res,
     }).catch(next);
 })
 
-//Create transactions - by associate to an existing account for a given user in a given provider 
-router.put('/user/:username/provider/:providerName/account/:docId/transactions',(req,res,next)=> {
-    Promise.resolve().then(async ()=> {
-        const db = app.locals.db;        
-        const collection = req.params.providerName;
-        const docId = req.params.docId;
-        const body = req.body;        
-
-        //create an object to have all the txnId fields         
-        const txnsUpdate = {};     
-        const transactions = body.transactions;   
-        for (const key in transactions) {
-            const value = transactions[key];
-            const keyUpdate = 'transactions.'+key;
-            txnsUpdate[keyUpdate] = value;
-        }
-
-        //update an existing account to create transactions
-        const result = await db.collection(collection).updateOne({_id:ObjectId(docId)},{$set:txnsUpdate});
-        res.status(200).send(result);        
-    }).catch(next);
-})
-
-//Update transaction by its key for a given account docId
-router.put('/user/:username/provider/:providerName/account/:docId/transaction/:txnId',(req,res,next)=> {
-    Promise.resolve().then(async ()=> {
-        const db = app.locals.db;
-        const collection = req.params.providerName;
-        const docId = req.params.docId;
-        const txnId = req.params.txnId;
-        const field = 'transactions.'+txnId;
-        const transaction = {};
-        transaction[field] = req.body.transaction;
-
-        //update an existing transaction 
-        const result = await db.collection(collection).updateOne({_id:ObjectId(docId)},{$set:transaction});
-        res.status(200).send(result);
-    }).catch(next);
-})
-
 //delete an account from db per user per provider
 router.delete('/user/:username/provider/:providerName/account/:docId',(req,res,next) => {
     Promise.resolve().then(async ()=> {
@@ -121,18 +81,15 @@ router.put('/user/:username/provider/:providerName/account/:docId',(req,res,next
         const docId = req.params.docId;
         const body = req.body;        
 
-        //TODO: prepare $unset object if exist from req.body
+        //prepare $unset object if exist from req.body
         const unset = {};
         for (const key in body) {
             if(body.hasOwnProperty(key)) {
                 let value = body[key];
-                //if it's an embedded object then make . separated key for $unset
-                let keyEmbedded = undefined;
-                if(typeof value === 'object') {                    
-                    //keyEmbedded = key;
+                //if it's an embedded object then find value of last nested key for $unset                
+                if(typeof value === 'object') {                                        
                     while(typeof value === 'object') {
-                        let tmpKey = Object.getOwnPropertyNames(value)[0];
-                        //keyEmbedded += '.' + tmpKey;
+                        let tmpKey = Object.getOwnPropertyNames(value)[0];                        
                         value = value[tmpKey];
                     }                    
                 }
@@ -159,28 +116,6 @@ router.put('/user/:username/provider/:providerName/account/:docId',(req,res,next
             res.sendStatus(500);
         }
               
-    }).catch(next);
-})
-
-//Delete an user
-router.delete('/user',(req,res,next) => {
-    Promise.resolve().then(async ()=> {
-        const db = app.locals.db;
-        const username = req.query.username;
-        const password = req.query.password;
-
-        const result = await db.collection('users').deleteOne({username:username,password:password});
-        if (result) {
-            if (result.deletedCount === 1) {
-                res.status(200).send({message: 'deleted successfully'});
-            }
-            else {
-                res.status(200).send({error: 'user doesn`t exist'});
-            }
-        }
-        else {
-            res.sendStatus(500);
-        }
     }).catch(next);
 })
 

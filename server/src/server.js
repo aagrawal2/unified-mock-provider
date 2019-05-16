@@ -20,6 +20,7 @@ export default app;
 //this is deliberately imported after app exports coz this app is getting imported in users.js 
 import userRoutes from './routes/users';
 import accountRoutes from './routes/accounts';
+import transactionRoutes from './routes/transactions';
 
 //custom middleware to handle cross-origin requests
 const allowCrossDomain = (req,res,next) => {
@@ -40,7 +41,7 @@ app.use(allowCrossDomain);
 //app.use(cors())  //bakcup plan in case some issue with custom middleware fn allowCrossDomain()
 
 //configure middleware routes
-app.use('/ump',userRoutes,accountRoutes);
+app.use('/ump',userRoutes,accountRoutes,transactionRoutes);
 
 //app settings - to indent prettified JSON - used by JSON.stringify()
 app.set('json spaces', 4);

@@ -38,6 +38,7 @@ import provider from '../conf/provider.json';
 
 const onChangeProvider = (props,data) => {
     const providerName = data.value;
+    props.setRenderProvider(false,providerName);
     //render Accounts component
     props.setRenderAccounts(true, providerName);
 };

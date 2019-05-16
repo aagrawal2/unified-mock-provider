@@ -4,13 +4,13 @@ import { Menu, Dropdown, Button, Header } from "semantic-ui-react";
 import ReactTable from 'react-table';
 import '../scss/Accounts.scss';
 import Provider from '../conf/provider.json';
-import ProviderAccounts from '../conf/provider-accounts.json';
+import ProviderAccounts from '../conf/provider-details.json';
 import 'react-table/react-table.css';
 import { Link } from "react-router-dom";
 import randomstring from 'randomstring';
 import Axios from "axios";
 import { connect } from "react-redux";
-import { getAccount, addAccount, deleteAccount } from '../actions/actions';
+import { getAccounts, addAccount, deleteAccount } from '../actions/actions';
 import { getProviderLogo } from '../shared/utility';
 import Backend from '../conf/backend.json';
 
@@ -22,7 +22,7 @@ const mapStateToProps = state => {
 
 function mapDispatchToProps(dispatch) {
     return {
-        getAccount: accounts => dispatch(getAccount(accounts)),
+        getAccounts: (url,config) => dispatch(getAccounts(url,config)),
         addAccount: account => dispatch(addAccount(account)),
         deleteAccount: accountRow => dispatch(deleteAccount(accountRow))
     };
@@ -32,26 +32,30 @@ function mapDispatchToProps(dispatch) {
 const componentDidMount = (props) => {
     const username = props.username;
     const providerName = props.providerName;
-    const columns = Provider[props.providerName];
+    const columns = Provider[props.providerName].accounts;
 
-    includeLinkInAccountId(columns);
+    includeLinkInAccountId(columns,props);
     includeColumnDeleteAction(props,columns);
 
+    //TODO:Move this state changing logic to redux using redux-thunk OR redux-saga
     //call backend api to get /accounts of an user for a given provider    
     const url = Backend.baseURL+'/user/'+username+'/provider/'+providerName+'/accounts';
     const config = { timeout: Backend.timeout };
-    Axios.get(url, config)
+    //dispatch an action to Redux store for change in state
+    props.getAccounts(url,config);
+
+    /* Axios.get(url, config)
         .then(response => {
             if (response.status === 200 && !response.data.error) {                
                 const existingAccounts = response.data;                
-                //dispatch an action to Redux store for change in state
-                props.getAccount(existingAccounts);
+                
+                //props.getAccount(existingAccounts);                
                 //this.setState({ tableData });
             }
         })
         .catch(error => {
             console.log(`ERROR:response from server: ${error.stack}`);
-        });
+        }); */
 };
 
 //make lifecycle methods as properties on standrad object
@@ -59,11 +63,19 @@ const methods = {
     componentDidMount
 };
 
-const includeLinkInAccountId = (columns) => {
+/*This method is to deliberately update 'renderAccounts' state of UMP.jsx component for back navigation to work, 
+    coz rendering of Account.jsx component is through 'Link' from Accounts.jsx component which changes url path and 
+    renders via 'match' prop using 'switch' component. So we don't explcitly change state before rendering Account.jsx component. 
+*/
+const clickHandlerLink = (props) => {
+    props.setRenderAccounts(false,props.providerName);
+}
+
+const includeLinkInAccountId = (columns,props) => {
     columns.forEach(column => {
         if (column.accessor === '_id') {
             if(!column.Cell)
-                column.Cell = e => <Link to={`/provider/account/${e.value}`}><u>{e.value}</u></Link>
+                column.Cell = e => <Link to={`/provider/account/${e.value}`} onClick={()=>clickHandlerLink(props)}><u>{e.value}</u></Link>
             return;    
         }
     });
@@ -137,7 +149,7 @@ const clickHandlerCreateAccount = (event, data, props) => {
     const currencyFields = ProviderAccounts.currencyFields;
     const dateFields = ProviderAccounts.dateFields;
 
-    const accountFields = ProviderAccounts[providerName][accountType];
+    const accountFields = ProviderAccounts[providerName].accounts[accountType];
     accountFields.forEach(element => {
         let field = element.field;
 
@@ -318,7 +330,7 @@ const loadProviderDropdownItems = (props) => {
 
 const AccountsRedux = (props) => {
     const { providerName, accounts } = props;            
-    const columns = Provider[providerName];
+    const columns = Provider[providerName].accounts;
     
     const navigateBack = () => props.navigateBack();
 
@@ -343,7 +355,6 @@ const AccountsRedux = (props) => {
                 noDataText="You don't have any accounts yet" />
         </div>
     );
-
 };
 
 //decorate the component
