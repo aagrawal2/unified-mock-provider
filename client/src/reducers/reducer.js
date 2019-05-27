@@ -1,6 +1,6 @@
 const initialState = {    
-    accounts: undefined,
-    transactions: undefined,
+    accounts: [],
+    transactions: [],
     modalOpen: false,
     nestedModalOpen: false,
     searchQuery: '',

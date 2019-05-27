@@ -20,8 +20,7 @@
             "accounttypes": [
                 "Checking",
                 "Savings",
-                "CreditCard",
-                "Mortgage"
+                "CreditCard"                
             ],
             "transactiontypes": [
                 "Posted",
@@ -184,32 +183,28 @@
     "citi": {
         "accounts": [
             {
-                "Header": "Description",
-                "accessor": "accountDesc"
-            },
-            {
-                "Header": "Ac Num",
-                "accessor": "accountNumber"
-            },
-            {
                 "Header": "Id",
                 "accessor": "_id"
             },
+            {
+                "Header": "Ac Num",
+                "accessor": "displayAccountNumber"
+            },
+            {
+                "Header": "Description",
+                "accessor": "accountDescription"
+            },                        
             {
                 "Header": "Ac Type",
                 "accessor": "accountType"
             },
             {
                 "Header": "Curr Balance",
-                "accessor": "currBalance"
+                "accessor": "currentBalance"
             },
             {
-                "Header": "Credit Line",
-                "accessor": "creditLine"
-            },
-            {
-                "Header": "Interest Rate",
-                "accessor": "interestRate"
+                "Header": "Credit Limit",
+                "accessor": "creditLimit"
             }
         ],
         "transactions": []

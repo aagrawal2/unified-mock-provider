@@ -1,0 +1,8 @@
+{
+  "sync.gist": "aagrawal2",
+  "files.autoSave": "onFocusChange",
+  "git.autofetch": true,
+  "editor.formatOnSave": true,
+  "editor.formatOnType": true,
+  "eslint.autoFixOnSave": true
+}
