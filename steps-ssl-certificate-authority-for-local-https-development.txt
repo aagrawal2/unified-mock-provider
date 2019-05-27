@@ -1,0 +1,39 @@
+Reference: https://deliciousbrains.com/ssl-certificate-authority-for-local-https-development/
+
+1: Installing Root Certificate
+#generate private key 
+#openssl genrsa -des3 -out myCA.key 2048
+
+#generate root certificate  -- answers to all questions don't matter except 'common name' answer remember (say ump.com) as it will be used later
+#openssl req -x509 -new -nodes -key myCA.key -sha256 -days 1825 -out myCA.pem
+
+#Add root certificate myCA.pem in macOS keychain
+	1:Open the macOS Keychain app
+	2:select login in left and then Go to File > Import Items…
+	3:Select your root certificate file (i.e. myCA.pem)
+	4:Search for whatever you answered as the 'Common Name' name above 
+	5:Double click on your root certificate in the list
+	6:Expand the Trust section
+	7:Change the When using this certificate: select box to “Always Trust”
+
+2: Creating CA-Signed Certificates for Your Dev Sites
+#create a private key
+#openssl genrsa -out server.key 2048
+
+#create a CSR (Certificate Signed Request)
+#openssl req -new -key server.key -out server.csr
+
+#create a config file (say localhost.ssl.config) to create certificate, following are the contents of config file where alt_names can be many.
+	authorityKeyIdentifier=keyid,issuer
+	basicConstraints=CA:FALSE
+	keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+	subjectAltName = @alt_names
+
+	[alt_names]
+	DNS.1 = localhost
+	DNS.2 = 127.0.0.1
+	DNS.3 = ump.com
+
+#create certificate using server.csr, myCA.pem, myCA.key
+#openssl x509 -req -in server.csr -CA myCA.pem -CAkey myCA.key -CAcreateserial -out server.crt -days 1825 -sha256 -extfile localhost.ssl.config
+
